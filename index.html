@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>WWF Demo</title>
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+	google.load("visualization", '1', {packages:['corechart','table','controls','motionchart']});
+	google.setOnLoadCallback(draw);
+
+	function draw() {
+     var queryTable = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=0Am7o6o9K5vNxdFpBRG1ES0dBclFpZzBEQTdFcFdYSFE&sheet=table');
+	 queryTable.send(handleTableQueryResponse);
+
+     var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1W3_v1-CgF6KZ3Vlfxt-EaOLFs5VgdgMRshmb9z8cSiI&sheet=chart');
+	 queryChart.send(handleChartQueryResponse);
+	};
+
+	function handleChartQueryResponse(response) {
+	  if (response.isError()) {
+	    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	    return;
+	  }
+      var data = response.getDataTable();
+
+      //var data = new google.visualization.DataTable();
+	  //data.addColumn('string', 'Stakeholder');
+	  //data.addColumn('date', 'Date');
+	  //data.addColumn('number', 'Opponent <-> Supporter');
+	  //data.addColumn('number', 'Level of Influence');
+	  //data.addColumn('string', 'Category');
+	  //data.addRows([
+      //    ['WWF Intl',  new Date (2014,1,1), 4, 2, 'NGO'],
+      //    ['WWF US', new Date (2014,1,1), -2, 4, 'NGO'],
+      //    ['SFI', new Date (2014,1,1), 5,  2, 'NGO-GI'],
+      //    ['WWF Intl',  new Date (2014,4,1), 4, 2, 'NGO'],
+      //    ['WWF US', new Date (2014,4,1), -2,  3, 'NGO'],
+      //    ['SFI', new Date (2014,4,1), 5,  2, 'NGO-GI']
+      //  ]);
+	  var chart = new google.visualization.MotionChart(document.getElementById('chart'));
+	  var options = {};
+	  options['state'] = '{"xAxisOption":"2","playDuration":15000,"sizeOption":"3","xZoomedIn":false,"xLambda":1,"colorOption":"4","yZoomedIn":false,"nonSelectedAlpha":0.1,"yAxisOption":"3","iconType":"BUBBLE","xZoomedDataMin":-2,"orderedByY":false,"duration":{"multiplier":1,"timeUnit":"D"},"xZoomedDataMax":5,"dimensions":{"iconDimensions":["dim0"]},"iconKeySettings":[],"orderedByX":false,"yLambda":1,"yZoomedDataMax":4,"showTrails":false,"uniColorForNonSelected":false,"time":"2014-02-01","yZoomedDataMin":2}';
+	  options['showChartButtons'] = false;
+	  options['width'] = 800;
+	  options['height'] = 600;
+	  options['showXMetricPicker'] = false;
+	  options['showYMetricPicker'] = false;
+	  options['showXScalePicker'] = false;
+	  options['showYScalePicker'] = false;
+	  options['showAdvancedPanel'] = false;
+	  options['showSelectListComponent'] = false;
+	  options['showSidePanel'] = true;
+	  chart.draw(data, options);
+	};
+
+	function handleTableQueryResponse(response) {
+	  if (response.isError()) {
+	    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	    return;
+	  }
+	  var data = response.getDataTable();
+      var table = new google.visualization.Table(document.getElementById('table'));
+	  table.draw(data, {width: 600, height:130});
+	};
+	</script>
+
+</head>
+<body>
+	<h1>Action Status</h1>
+	<span id='table'></span>
+	<h1>Influencer</h1>
+	<span id='chart'></span>
+</body>
+</html>
+
+
+
+
+
+
