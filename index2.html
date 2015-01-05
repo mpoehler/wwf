@@ -10,6 +10,8 @@
       // Set a callback to run when the Google Visualization API is loaded.
       google.setOnLoadCallback(callData);
 
+      var that = this;
+
       function callData() {
       	var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1W3_v1-CgF6KZ3Vlfxt-EaOLFs5VgdgMRshmb9z8cSiI&sheet=chart2');
 	 		queryChart.send(handleChartQueryResponse);
@@ -48,22 +50,57 @@
           	  }
            });
 
-           var pieChart = new google.visualization.ChartWrapper({
+           that.bubbleChart = new google.visualization.ChartWrapper({
           	'chartType': 'BubbleChart',
           	'containerId': 'chart_div',
           	'options': {
+          		'height' : 600,
+          		'width' : 600,
+          		'animation' : {
+            		'duration' : 1000,
+            		'easing' : 'inAndOut'
+            	},
+            	'legend' :{
+            		'position' : 'top' 
+            	},
+            	'chartArea' : {
+            		'width' : '90%',
+            		'height' : '90%'
+            	},           	
+            	'hAxis' : {
+            		'baselineColor':'#ffffff',
+            		'title': 'Opponent <-> Supporter',  
+            		'titleTextStyle': {color: '#000000'},
+            		'ticks':  [-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],
+            		'format': '#',
+            		'gridlines': {
+            			'color' : '#FFFFFF'
+            		}
+            	},
+            	'vAxis' : {
+            		'title': ' less <- Influence -> more',  
+            		'titleTextStyle': {color: '#000000'},
+            		'ticks':  [0, 1, 2, 3, 4, 5,6],
+            		'format': '#',
+            		'gridlines': {
+            			'color' : '#FFFFFF'
+            		}	
+            	}
           	}
            });
 
-           dashboard.bind([dateSelector,categoryfilter], pieChart);
+           dashboard.bind(new Array(dateSelector, categoryfilter), that.bubbleChart);
 		   dashboard.draw(data);
 
- /*		  var options = {
-          };
-	      var chart = new google.visualization.BubbleChart(document.getElementById('chart_div'));
-          chart.draw(data, options);
-*/
+		   google.visualization.events.addListener(that.bubbleChart, 'select', func);
+
 		};
+
+	   function func() {
+    		console.log('Hoppla' + that.bubbleChart.getChart().getSelection()[0]);
+
+		} 
+
 
     </script>
   </head>
