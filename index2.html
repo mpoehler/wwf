@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the controls package.
+      google.load('visualization', '1.0', {'packages':['controls', 'corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(callData);
+
+      function callData() {
+      	var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1W3_v1-CgF6KZ3Vlfxt-EaOLFs5VgdgMRshmb9z8cSiI&sheet=chart2');
+	 		queryChart.send(handleChartQueryResponse);
+      }
+
+      function handleChartQueryResponse(response) {
+		  if (response.isError()) {
+		    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+		    return;
+		  }
+	      var data = response.getDataTable();
+
+ 		   // Create a dashboard.
+           var dashboard = new google.visualization.Dashboard(
+           document.getElementById('dashboard_div'));
+
+ 		   var dateSelector = new google.visualization.ControlWrapper({
+	          'controlType': 'CategoryFilter',
+    	      'containerId': 'datefilter_div',
+        	  'options': {
+            	'filterColumnLabel': 'Datum',
+            	'ui' : {
+            		'allowNone' : false,
+            		'allowMultiple' : false
+            	}
+          	  }
+           });
+
+           var categoryfilter = new google.visualization.ControlWrapper({
+	          'controlType': 'CategoryFilter',
+    	      'containerId': 'categoryfilter_div',
+        	  'options': {
+            	'filterColumnLabel': 'Category',
+            	'ui' : {
+            	}
+          	  }
+           });
+
+           var pieChart = new google.visualization.ChartWrapper({
+          	'chartType': 'BubbleChart',
+          	'containerId': 'chart_div',
+          	'options': {
+          	}
+           });
+
+           dashboard.bind([dateSelector,categoryfilter], pieChart);
+		   dashboard.draw(data);
+
+ /*		  var options = {
+          };
+	      var chart = new google.visualization.BubbleChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+*/
+		};
+
+    </script>
+  </head>
+
+  <body>
+    <!--Div that will hold the dashboard-->
+    <div id="dashboard_div">
+      <!--Divs that will hold each control and chart-->
+      <div id="datefilter_div"></div>
+      <div id="categoryfilter_div"></div>
+      <div id="chart_div"></div>
+    </div>
+  </body>
+</html>
