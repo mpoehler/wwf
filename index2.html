@@ -1,21 +1,100 @@
 <html>
   <head>
+  <style type="text/css">
+	<!--
+	.actiontable {
+		width: 300px;	
+	}
+	.col0{
+		font-weight: bold;
+	}
+
+	-->
+	</style>
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
 
       // Load the Visualization API and the controls package.
-      google.load('visualization', '1.0', {'packages':['controls', 'corechart']});
+      google.load('visualization', '1.0', {'packages':['controls', 'corechart','table']});
 
       // Set a callback to run when the Google Visualization API is loaded.
       google.setOnLoadCallback(callData);
 
+	  //#########################################
+	  // create the actiontable as new chart
+	  //#########################################
+	  
+	  // Declare a unique namespace.
+	  var actiontable = {};
+	  
+	  // Class constructor. Parameter container is a DOM elementon the client that
+	  // that will contain the chart.
+	  actiontable.MyTable = function(container) {
+ 		this.containerElement = container;
+	  }
+	
+		// Main drawing logic.
+		// Parameters:
+		//   data is data to display, type google.visualization.DataTable.
+		//   options is a name/value map of options. Our example takes one option.
+		actiontable.MyTable.prototype.draw = function(data, options) {
+
+		  // Create an HTML table
+		  var hideCols = options.hideCols; // array of columns to hide
+		  var avoidEmptyIndex = options.avoidEmptyIndex; // Index indicating 
+
+		  var html = [];
+		  html.push('<table class="actiontable">');
+
+		  for (var row = 0; row < data.getNumberOfRows(); row++) {
+			html.push('<tr>');
+			for (var col = 0; col < data.getNumberOfColumns(); col++) {
+				if (data.getFormattedValue(row, avoidEmptyIndex)!="") {
+					if (hideCols.indexOf(col)<0) {
+						html.push('<td class="col'+col+'">');
+						html.push(this.escapeHtml(data.getFormattedValue(row, col)));
+						html.push('</td>');
+					}
+		  		}
+			}
+			html.push('</tr>');
+		  }
+		  html.push('</table>');
+
+		  this.containerElement.innerHTML = html.join('');
+		}
+
+		// Utility function to escape HTML special characters
+		actiontable.MyTable.prototype.escapeHtml = function(text) {
+		  if (text == null)
+			return '';
+		  return text.replace(/&/g, '&').replace(/</g, '<')
+			  .replace(/>/g, '>').replace(/"/g, '"');
+		}
+
+		// ############# End of Chart #################
+
       var that = this;
 
       function callData() {
-      	var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1W3_v1-CgF6KZ3Vlfxt-EaOLFs5VgdgMRshmb9z8cSiI&sheet=chart2');
-	 		queryChart.send(handleChartQueryResponse);
+
+		var queryTable = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1HbJzAvVjPbDz2ncRzOVnntr8T9W90Q5qpy4L5WZZ-6A&sheet=DS_ActionplanOverview');
+	 	queryTable.send(handleTableQueryResponse);
+
+      	var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1HbJzAvVjPbDz2ncRzOVnntr8T9W90Q5qpy4L5WZZ-6A&sheet=DS_Influencer');
+	 	queryChart.send(handleChartQueryResponse);
       }
+
+      function handleTableQueryResponse(response) {
+		  if (response.isError()) {
+			alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+			return;
+		  }
+		  var data = response.getDataTable();
+		  var table = new google.visualization.Table(document.getElementById('table'));
+		  table.draw(data, {width: 600, height:130});
+	  };
 
       function handleChartQueryResponse(response) {
 		  if (response.isError()) {
@@ -89,7 +168,18 @@
           	}
            });
 
-           dashboard.bind(new Array(dateSelector, categoryfilter), that.bubbleChart);
+		   var changeReasonsTable = new google.visualization.ChartWrapper({
+          		'chartType': 'actiontable.MyTable',
+          		'containerId': 'changeReasons',
+          		'options': {
+          			'hideCols' : [1,2,3,4,5,6,7],
+          			'avoidEmptyIndex' : 8
+          		}
+        	});
+
+
+
+           dashboard.bind(new Array(dateSelector, categoryfilter), new Array(that.bubbleChart, changeReasonsTable));
 		   dashboard.draw(data);
 
 		   google.visualization.events.addListener(that.bubbleChart, 'select', func);
@@ -98,20 +188,27 @@
 
 	   function func() {
     		console.log('Hoppla' + that.bubbleChart.getChart().getSelection()[0]);
+	   } 
 
-		} 
-
+	   function aHandler(e) {
+  		   alert('A handler was called');
+	   }
 
     </script>
   </head>
 
   <body>
+    <h1>Action Status</h1>
+  	<span id='table'></span>
+
+	<h1>Influencer</h1>
     <!--Div that will hold the dashboard-->
     <div id="dashboard_div">
       <!--Divs that will hold each control and chart-->
       <div id="datefilter_div"></div>
       <div id="categoryfilter_div"></div>
       <div id="chart_div"></div>
+      <div id="changeReasons"></div>
     </div>
   </body>
 </html>
