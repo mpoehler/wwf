@@ -11,13 +11,10 @@
 		}
 		.col0{
 			font-weight: bold;
-			padding-right: 15px;
-			vertical-align: top;
-			border-bottom: 1px grey solid;			
+			border-top: 1px solid grey;
 		}
 		.col8{
-			padding-bottom: 15px;
-			border-bottom: 1px grey solid;
+			border-top: 1px solid grey;
 		}
 		.tab-pane {
 			border: 1px solid #DCDCDC;
@@ -70,22 +67,22 @@
 		  var avoidEmptyIndex = options.avoidEmptyIndex; // Index indicating 
 
 		  var html = [];
-		  html.push('<table class="actiontable">');
+		  //html.push('<table class="actiontable">');
 
 		  for (var row = 0; row < data.getNumberOfRows(); row++) {
-			html.push('<tr>');
+			html.push('<div class="row tbrow">');
 			for (var col = 0; col < data.getNumberOfColumns(); col++) {
 				if (data.getFormattedValue(row, avoidEmptyIndex)!="") {
 					if (hideCols.indexOf(col)<0) {
-						html.push('<td class="col'+col+'">');
+						html.push('<div class="col-xs-6 col'+col+'">');
 						html.push(this.escapeHtml(data.getFormattedValue(row, col)));
-						html.push('</td>');
+						html.push('</div>');
 					}
 		  		}
 			}
-			html.push('</tr>');
+			html.push('</div>');
 		  }
-		  html.push('</table>');
+		  //html.push('</table>');
 
 		  this.containerElement.innerHTML = html.join('');
 		}
@@ -158,8 +155,8 @@
           	'chartType': 'BubbleChart',
           	'containerId': 'chart_div',
           	'options': {
-          		'height' : 600,
-          		'width' : 600,
+          		'height' : 500,
+          		'width' : 500,
           		'animation' : {
             		'duration' : 1000,
             		'easing' : 'inAndOut'
