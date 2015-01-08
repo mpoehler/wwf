@@ -1,72 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>WWF Demo</title>
+  <head>
+  	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  	<style type="text/css">
+		<!--
+		.actiontable {
+			width: 400px;
+		}
+		.col0{
+			font-weight: bold;
+			border-top: 1px solid grey;
+		}
+		.col8{
+			border-top: 1px solid grey;
+		}
+		.col10{
+			border-top: 1px solid grey;
+		}
+		.tab-pane {
+			border: 1px solid #DCDCDC;
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+		#relations {
+			display: none;
+		}
+		-->
+	</style>
 
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-	<script type="text/javascript">
-	google.load("visualization", '1', {packages:['corechart','table','controls','motionchart']});
-	google.setOnLoadCallback(draw);
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
-	function draw() {
-     var queryTable = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=0Am7o6o9K5vNxdFpBRG1ES0dBclFpZzBEQTdFcFdYSFE&sheet=table');
-	 queryTable.send(handleTableQueryResponse);
+	<!-- Optional theme -->
+	<!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css"-->
 
-     var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=1W3_v1-CgF6KZ3Vlfxt-EaOLFs5VgdgMRshmb9z8cSiI&sheet=chart');
-	 queryChart.send(handleChartQueryResponse);
-	};
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
 
-	function handleChartQueryResponse(response) {
-	  if (response.isError()) {
-	    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-	    return;
+      // Load the Visualization API and the controls package.
+      google.load('visualization', '1.0', {'packages':['controls', 'corechart','table']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(callData);
+
+	  //#########################################
+	  // create the actiontable as new chart
+	  //#########################################
+	  
+	  // Declare a unique namespace.
+	  var actiontable = {};
+	  
+	  // Class constructor. Parameter container is a DOM elementon the client that
+	  // that will contain the chart.
+	  actiontable.MyTable = function(container) {
+ 		this.containerElement = container;
 	  }
-      var data = response.getDataTable();
-	  var chart = new google.visualization.MotionChart(document.getElementById('chart'));
-	  var options = {};
-	  options['state'] = '{"xAxisOption":"2","playDuration":15000,"sizeOption":"3","xZoomedIn":false,"xLambda":1,"colorOption":"4","yZoomedIn":false,"nonSelectedAlpha":0.1,"yAxisOption":"3","iconType":"BUBBLE","xZoomedDataMin":-2,"orderedByY":false,"duration":{"multiplier":1,"timeUnit":"D"},"xZoomedDataMax":5,"dimensions":{"iconDimensions":["dim0"]},"iconKeySettings":[],"orderedByX":false,"yLambda":1,"yZoomedDataMax":4,"showTrails":false,"uniColorForNonSelected":false,"time":"2014-02-01","yZoomedDataMin":2}';
-	  options['showChartButtons'] = false;
-	  options['width'] = 800;
-	  options['height'] = 600;
-	  options['showXMetricPicker'] = false;
-	  options['showYMetricPicker'] = false;
-	  options['showXScalePicker'] = false;
-	  options['showYScalePicker'] = false;
-	  options['showAdvancedPanel'] = false;
-	  options['showSelectListComponent'] = false;
-	  options['showSidePanel'] = true;
-	  chart.draw(data, options);
-	};
+	
+		// Main drawing logic.
+		// Parameters:
+		//   data is data to display, type google.visualization.DataTable.
+		//   options is a name/value map of options. Our example takes one option.
+		actiontable.MyTable.prototype.draw = function(data, options) {
 
-	function handleTableQueryResponse(response) {
-	  if (response.isError()) {
-	    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-	    return;
-	  }
-	  var data = response.getDataTable();
-      var table = new google.visualization.Table(document.getElementById('table'));
-	  table.draw(data, {width: 600, height:130});
-	};
-	</script>
+		  // Create an HTML table
+		  var hideCols = options.hideCols; // array of columns to hide
+		  var avoidEmptyIndex = options.avoidEmptyIndex; // Index indicating 
 
-</head>
-<body>
-	<h1>Action Status</h1>
-	<span id='table'></span>
-	<h1>Influencer</h1>
-	<span id='chart'></span>
-	<hr>
-	Tabellen:
-	<ul>
-		<li><a target="_cool" href="https://docs.google.com/a/tuxoo.eu/spreadsheets/d/1W3_v1-CgF6KZ3Vlfxt-EaOLFs5VgdgMRshmb9z8cSiI/edit#gid=111835559">Influencer</a></li>
-		<li><a target="_cool" href="https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=0Am7o6o9K5vNxdFpBRG1ES0dBclFpZzBEQTdFcFdYSFE&usp=drive_web#gid=1">Actionplan</a></li>
-	</ul>
-</body>
+		  var html = [];
+		  //html.push('<table class="actiontable">');
+
+		  	html.push('<div class="row tbrow">');
+		  	html.push('<div class="col-xs-4"><b>Stakeholder</b></div>');
+		  	html.push('<div class="col-xs-4"><b>Action</b></div>');
+		  	html.push('<div class="col-xs-4"><b>Outcome</b></div>');
+		  	html.push('</div>');
+		 
+
+		  for (var row = 0; row < data.getNumberOfRows(); row++) {
+			html.push('<div class="row tbrow">');
+			for (var col = 0; col < data.getNumberOfColumns(); col++) {
+				if (data.getFormattedValue(row, avoidEmptyIndex)!="") {
+					if (hideCols.indexOf(col)<0) {
+						html.push('<div class="col-xs-4 col'+col+'">');
+						html.push(this.escapeHtml(data.getFormattedValue(row, col)));
+						html.push('</div>');
+					}
+		  		}
+			}
+			html.push('</div>');
+		  }
+		  //html.push('</table>');
+
+		  this.containerElement.innerHTML = html.join('');
+		}
+
+		// Utility function to escape HTML special characters
+		actiontable.MyTable.prototype.escapeHtml = function(text) {
+		  if (text == null)
+			return '';
+		  return text.replace(/&/g, '&').replace(/</g, '<')
+			  .replace(/>/g, '>').replace(/"/g, '"');
+		}
+
+		// ############# End of Chart #################
+
+      var that = this;
+
+      function callData() {
+
+		var queryTable = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=13VN3HX1n95xXCYC01ki5DYYjfDKVIaSkcQqvgKKRo-g&sheet=DS_ActionplanOverview');
+	 	queryTable.send(handleTableQueryResponse);
+
+      	var queryChart = new google.visualization.Query('https://docs.google.com/a/tuxoo.eu/spreadsheet/ccc?key=13VN3HX1n95xXCYC01ki5DYYjfDKVIaSkcQqvgKKRo-g&sheet=DS_Influencer');
+	 	queryChart.send(handleChartQueryResponse);
+      }
+
+      function handleTableQueryResponse(response) {
+		  if (response.isError()) {
+			alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+			return;
+		  }
+		  var data = response.getDataTable();
+		  var table = new google.visualization.Table(document.getElementById('table'));
+		  table.draw(data, {width: 600, height:130});
+	  };
+
+      function handleChartQueryResponse(response) {
+		  if (response.isError()) {
+		    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+		    return;
+		  }
+	      that.data = response.getDataTable();
+
+ 		   // Create a dashboard.
+           that.dashboard = new google.visualization.Dashboard(
+           document.getElementById('influencer'));
+
+ 		   var dateSelector = new google.visualization.ControlWrapper({
+	          'controlType': 'CategoryFilter',
+    	      'containerId': 'datefilter_div',
+        	  'options': {
+            	'filterColumnLabel': 'Datum',
+            	'ui' : {
+            		'allowNone' : false,
+            		'allowMultiple' : false
+            	}
+          	  }
+           });
+
+           var categoryfilter = new google.visualization.ControlWrapper({
+	          'controlType': 'CategoryFilter',
+    	      'containerId': 'categoryfilter_div',
+        	  'options': {
+            	'filterColumnLabel': 'Category',
+            	'ui' : {
+            	}
+          	  }
+           });
+
+           that.bubbleChart = new google.visualization.ChartWrapper({
+          	'chartType': 'BubbleChart',
+          	'containerId': 'chart_div',
+          	'options': {
+          		'height' : 500,
+          		'width' : 500,
+          		'animation' : {
+            		'duration' : 1000,
+            		'easing' : 'inAndOut'
+            	},
+            	'legend' :{
+            		'position' : 'none' 
+            	},
+            	'chartArea' : {
+            		'width' : '90%',
+            		'height' : '90%'
+            	},           	
+            	'hAxis' : {
+            		'baselineColor':'#ffffff',
+            		'title': 'Opponent <-> Supporter',  
+            		'titleTextStyle': {color: '#000000'},
+            		'ticks':  [-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6],
+            		'format': '#',
+            		'gridlines': {
+            			'color' : '#FFFFFF'
+            		}
+            	},
+            	'vAxis' : {
+            		'title': ' less <- Influence -> more',  
+            		'titleTextStyle': {color: '#000000'},
+            		'ticks':  [0, 1, 2, 3, 4, 5,6],
+            		'format': '#',
+            		'gridlines': {
+            			'color' : '#FFFFFF'
+            		}	
+            	}
+          	}
+           });
+
+		   var changeReasonsTable = new google.visualization.ChartWrapper({
+          		'chartType': 'actiontable.MyTable',
+          		'containerId': 'changeReasons',
+          		'options': {
+          			'hideCols' : [1,2,3,4,5,6,7,9],
+          			'avoidEmptyIndex' : 8
+          		}
+        	});
+
+           that.dashboard.bind(new Array(dateSelector, categoryfilter), new Array(that.bubbleChart, changeReasonsTable));
+		   that.dashboard.draw(that.data);
+
+		   google.visualization.events.addListener(that.bubbleChart, 'select', func);
+
+		};
+
+	   function func() {
+	   	if (that.bubbleChart.getChart().getSelection()[0]) {
+			var row = that.bubbleChart.getChart().getSelection()[0].row;
+	   		var text = that.bubbleChart.getDataTable().getFormattedValue(row,9);
+	   		if (text=="") {
+	   			$("#relations").hide();
+				$("#relationsContent").text('');
+	   		} else  {
+	   			$("#relations").show();
+	   			$("#relationsContent").text(text);
+	   		}  
+	   	}  		
+	   } 
+
+    </script>
+  </head>
+
+  <body>
+
+	<div class="container">
+	    <div class="page-header">
+		  <h1><img src="logo.png"> Smart Fishing <small>Actions & Stakeholder</small></h1>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div role="tabpanel">
+					 <!-- Nav tabs -->
+					  <ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active"><a href="#status" aria-controls="status" role="tab" data-toggle="tab">Status</a></li>
+						<li role="presentation"><a href="#influencer" aria-controls="influencer" role="tab" data-toggle="tab">Influencer</a></li>
+					  </ul>
+
+					  <!-- Tab panes -->
+					  <div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="status">
+							<div class="row">
+								<div class="col-xs-12">
+									<div style="padding-right:10px;" class="pull-right">
+										<a target="_cool" href="https://docs.google.com/a/wwf.panda.org/spreadsheets/d/13VN3HX1n95xXCYC01ki5DYYjfDKVIaSkcQqvgKKRo-g/edit#gid=780454226"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-6 col-xs-offset-3">
+									<span id='table'></span>
+								</div>
+							</div>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="influencer">
+							<div class="row">
+								<div class="col-xs-12">
+									<div style="padding-right:10px;" class="pull-right">
+										<a target="_cool" href="https://docs.google.com/a/wwf.panda.org/spreadsheets/d/13VN3HX1n95xXCYC01ki5DYYjfDKVIaSkcQqvgKKRo-g/edit#gid=292790764"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a>
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-xs-4 col-xs-offset-1 well">
+									<div id="datefilter_div"></div>
+								</div>
+								<div class="col-xs-4 col-xs-offset-1 well">
+									<div id="categoryfilter_div"></div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-6">
+									<div id="chart_div"></div>
+								</div>
+								<div class="col-xs-5">
+									<div class="well">
+										<span style="font-size: 23px;font-weight: bold;">Reasons for change</span>
+										<div id="changeReasons"></div>
+									</div>
+									<div class="well" id="relations">
+										<h3>Interdependencies</h3>
+										<span id="relationsContent"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					  </div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+  </body>
 </html>
-
-
-
-
-
-
