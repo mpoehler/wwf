@@ -16,6 +16,9 @@
 		.col8{
 			border-top: 1px solid grey;
 		}
+		.col10{
+			border-top: 1px solid grey;
+		}
 		.tab-pane {
 			border: 1px solid #DCDCDC;
 			padding-top: 10px;
@@ -69,12 +72,19 @@
 		  var html = [];
 		  //html.push('<table class="actiontable">');
 
+		  	html.push('<div class="row tbrow">');
+		  	html.push('<div class="col-xs-4"><b>Stakeholder</b></div>');
+		  	html.push('<div class="col-xs-4"><b>Action</b></div>');
+		  	html.push('<div class="col-xs-4"><b>Outcome</b></div>');
+		  	html.push('</div>');
+		 
+
 		  for (var row = 0; row < data.getNumberOfRows(); row++) {
 			html.push('<div class="row tbrow">');
 			for (var col = 0; col < data.getNumberOfColumns(); col++) {
 				if (data.getFormattedValue(row, avoidEmptyIndex)!="") {
 					if (hideCols.indexOf(col)<0) {
-						html.push('<div class="col-xs-6 col'+col+'">');
+						html.push('<div class="col-xs-4 col'+col+'">');
 						html.push(this.escapeHtml(data.getFormattedValue(row, col)));
 						html.push('</div>');
 					}
@@ -243,12 +253,26 @@
 					  <div class="tab-content">
 						<div role="tabpanel" class="tab-pane active" id="status">
 							<div class="row">
+								<div class="col-xs-12">
+									<div style="padding-right:10px;" class="pull-right">
+										<a target="_cool" href="https://docs.google.com/a/tuxoo.eu/spreadsheets/d/1HbJzAvVjPbDz2ncRzOVnntr8T9W90Q5qpy4L5WZZ-6A/edit#gid=780454226"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a>
+									</div>
+								</div>
+							</div>
+							<div class="row">
 								<div class="col-xs-6 col-xs-offset-3">
 									<span id='table'></span>
 								</div>
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="influencer">
+							<div class="row">
+								<div class="col-xs-12">
+									<div style="padding-right:10px;" class="pull-right">
+										<a target="_cool" href="https://docs.google.com/a/tuxoo.eu/spreadsheets/d/1HbJzAvVjPbDz2ncRzOVnntr8T9W90Q5qpy4L5WZZ-6A/edit#gid=292790764"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a>
+									</div>
+								</div>
+							</div>
 
 							<div class="row">
 								<div class="col-xs-4 col-xs-offset-1 well">
@@ -263,7 +287,10 @@
 									<div id="chart_div"></div>
 								</div>
 								<div class="col-xs-5">
-									<div class="well" id="changeReasons"></div>
+									<div class="well">
+										<span style="font-size: 23px;font-weight: bold;">Reasons for change</span>
+										<div id="changeReasons"></div>
+									</div>
 									<div class="well" id="relations">
 										<h3>Interdependencies</h3>
 										<span id="relationsContent"></span>
